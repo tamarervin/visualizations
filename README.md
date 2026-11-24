@@ -15,13 +15,13 @@ To get started, clone this repository to your computer. You will need to have [g
 You can either clone via SSH after following the steps in section [Setting Up an SSH Key]()  (tested in terminal Unix/Linux)
    
 ```
-git clone git@github.com:tamarervin/tutorials.git
+git clone git@github.com:tamarervin/visualizations.git
 ```
    
 In Windows, if the ssh step doesn't work, use the https cloning method instead in git-bash :
 
 ```
-git clone https://github.com/tamarervin/tutorials.git   
+git clone https://github.com/tamarervin/visualizations.git   
 ```   
 
 ## Pushing Code to Repository
@@ -34,7 +34,7 @@ Add all the files to the repo
 git add .
 ```
 
-Commit to the repository with a message4
+Commit to the repository with a message
 
 ```
 git commit -m 'your message here'
