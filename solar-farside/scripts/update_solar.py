@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import subprocess
 from tempfile import TemporaryDirectory
 from urllib.parse import urlencode, urljoin, urlsplit
 from urllib.request import Request, urlopen
@@ -93,10 +94,33 @@ def write_figure(fig, path):
         plt.close(fig)
 
 
+def download_adapt(url, destination):
+    """Download an NSO listing or FITS file with a bounded IPv4 request."""
+    wget = shutil.which("wget")
+    if wget is None:
+        content, _ = fetch(url)
+        destination.write_bytes(content)
+        return
+
+    try:
+        result = subprocess.run(
+            [wget, "-4", "--timeout=15", "--tries=1", "--no-verbose",
+             "--output-document", str(destination), "--", url],
+            capture_output=True,
+            text=True,
+            timeout=25,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise TimeoutError("wget exceeded the 25-second download deadline") from exc
+    if result.returncode:
+        detail = result.stderr.strip() or "no error details"
+        raise OSError(f"wget exit {result.returncode}: {detail}")
+
+
 def read_adapt_member(url, temp):
-    content, _ = fetch(url)
     path = temp / Path(urlsplit(url).path).name
-    path.write_bytes(content)
+    download_adapt(url, path)
     with fits.open(path, memmap=False) as hdus:
         cube = hdus[0].data
         if cube is None or cube.ndim not in (2, 3) or not cube.size:
@@ -121,7 +145,9 @@ def latest_adapt_map(archive, now, temp):
     for year in sorted({now.year, (now - timedelta(days=7)).year}, reverse=True):
         directory = f"{archive}{year}/"
         try:
-            filenames = links(directory)
+            index = temp / "adapt-index.html"
+            download_adapt(directory, index)
+            filenames = Links(index.read_text(encoding="utf-8")).hrefs
         except (OSError, ValueError) as exc:
             index_errors.append(f"{directory}: {exc}")
             logging.warning("ADAPT directory %s: %s", directory, exc)
