@@ -28,5 +28,3 @@ All data is pulled from publicly accessible, online sources. These data and plot
 - **Solar wind at Earth.** Explore the latest available 72 hours of one-minute OMNI solar wind speed, proton density, magnetic field magnitude, and GSM B<sub>z</sub>. OMNI times are shifted to Earth’s bow shock nose.
 
 The monitor checks for updates hourly. Each panel shows its own data time or provider update time. OMNI can lag behind the solar images, so check the displayed timestamps when comparing datasets.
-
-## The Heliosphere
