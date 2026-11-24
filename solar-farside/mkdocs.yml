@@ -1,3 +1,7 @@
 site_name: Heliophysics
+site_url: https://tamarervin.github.io/visualizations/
 nav:
-  - Solar monitor: solar-monitor/index.md
+  - Home: index.md
+  - Solar Monitor: solar-monitor/index.md
+extra_css:
+  - stylesheets/heliophysics.css

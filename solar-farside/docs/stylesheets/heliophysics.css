@@ -1,0 +1,84 @@
+:root {
+  --site-lavender: #EBE3FA;
+  --site-ink: #000;
+  --site-font: Georgia, "Times New Roman", serif;
+  --bs-font-sans-serif: var(--site-font);
+  --bs-body-font-family: var(--site-font);
+  --bs-body-color: var(--site-ink);
+  --bs-link-color: var(--site-ink);
+  --bs-link-hover-color: var(--site-ink);
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: var(--site-font);
+  color: var(--site-ink);
+}
+
+.navbar.bg-primary {
+  --bs-navbar-color: var(--site-ink);
+  --bs-navbar-hover-color: var(--site-ink);
+  --bs-navbar-active-color: var(--site-ink);
+  --bs-navbar-brand-color: var(--site-ink);
+  --bs-navbar-brand-hover-color: var(--site-ink);
+  --bs-navbar-toggler-border-color: var(--site-ink);
+  background: var(--site-lavender) !important;
+}
+
+.navbar.bg-primary .navbar-toggler-icon {
+  filter: brightness(0);
+}
+
+.navbar.bg-primary .nav-link:hover,
+.navbar.bg-primary .nav-link.active {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.bs-sidebar .nav > li > a.active,
+.bs-sidebar .nav > li > a:hover {
+  background: var(--site-lavender);
+  color: var(--site-ink);
+  border-right-color: var(--site-ink);
+}
+
+[role="main"] a {
+  color: var(--site-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--site-ink);
+  outline-offset: 3px;
+}
+
+.home-intro {
+  margin: 1rem 0 2rem;
+  padding: clamp(1.1rem, 3vw, 2rem);
+  border-radius: 0.5rem;
+  background: var(--site-lavender);
+}
+
+.home-intro p {
+  max-width: 47rem;
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+.home-intro .monitor-link {
+  display: inline-block;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--site-ink);
+  border-radius: 0.25rem;
+  background: #fff;
+  text-decoration: none;
+}
+
+.home-intro .monitor-link:hover {
+  text-decoration: underline;
+}
