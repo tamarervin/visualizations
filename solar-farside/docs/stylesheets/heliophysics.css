@@ -82,3 +82,37 @@ button:focus-visible {
 .home-intro .monitor-link:hover {
   text-decoration: underline;
 }
+
+
+.research-wrap {
+  display: flow-root;
+}
+
+.research-figure {
+  float: left;
+  width: 33.333%;
+  margin: 0 1.25rem 0.75rem 0;
+}
+
+.research-figure > p {
+  margin: 0;
+}
+
+.research-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.research-figure figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.9em;
+}
+
+@media (max-width: 650px) {
+  .research-figure {
+    float: none;
+    width: 100%;
+    margin: 0 0 1rem;
+  }
+}
