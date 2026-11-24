@@ -15,8 +15,6 @@ from pathlib import Path
 import re
 import shutil
 from tempfile import TemporaryDirectory
-from time import sleep
-from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
@@ -35,6 +33,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PAGE = ROOT / "docs" / "solar-monitor"
 CACHE = ROOT / ".solar-cache"
 GONG = "https://gong.nso.edu/adapt/maps/gong/"
+GONG_ALTERNATE = "https://nispdata.nso.edu/ftp/adapt/maps/gong/"
 AIA = "https://jsoc1.stanford.edu/data/aia/synoptic/nrt/"
 HMI = "https://jsoc1.stanford.edu/data/hmi/images/latest/HMI_latest_Mag.fits"
 FARSIDE = "http://jsoc.stanford.edu/data/farside/Recent/Composite_Map.png"
@@ -94,18 +93,6 @@ def write_figure(fig, path):
         plt.close(fig)
 
 
-def adapt_directory_links(directory):
-    # A transient index request failure would otherwise leave no FITS candidates.
-    for attempt in range(2):
-        try:
-            return links(directory)
-        except (URLError, TimeoutError) as exc:
-            if attempt or (isinstance(exc, HTTPError) and exc.code not in {408, 429, 500, 502, 503, 504}):
-                raise
-            logging.warning("Retrying ADAPT directory %s after %s", directory, exc)
-            sleep(2)
-
-
 def read_adapt_member(url, temp):
     content, _ = fetch(url)
     path = temp / Path(urlsplit(url).path).name
@@ -128,13 +115,13 @@ def read_adapt_member(url, temp):
     return Map(field, header), member_count
 
 
-def render_adapt(out, now, temp):
+def latest_adapt_map(archive, now, temp):
     candidates = set()
     index_errors = []
     for year in sorted({now.year, (now - timedelta(days=7)).year}, reverse=True):
-        directory = f"{GONG}{year}/"
+        directory = f"{archive}{year}/"
         try:
-            filenames = adapt_directory_links(directory)
+            filenames = links(directory)
         except (OSError, ValueError) as exc:
             index_errors.append(f"{directory}: {exc}")
             logging.warning("ADAPT directory %s: %s", directory, exc)
@@ -156,12 +143,25 @@ def render_adapt(out, now, temp):
     for when, url in sorted(candidates, reverse=True)[:3]:
         try:
             smap, member_count = read_adapt_member(url, temp)
-            break
+            return when, url, smap, member_count
         except (OSError, ValueError, EOFError) as exc:
             failures.append(f"{url}: {exc}")
             logging.warning("ADAPT FITS input %s: %s", url, exc)
+    raise ValueError("ADAPT FITS download or loading failed: " + " | ".join(failures))
+
+
+def render_adapt(out, now, temp):
+    archive_errors = []
+    # Prefer the NISP endpoint after a runner timed out reaching the GONG host.
+    for archive in (GONG_ALTERNATE, GONG):
+        try:
+            when, url, smap, member_count = latest_adapt_map(archive, now, temp)
+            break
+        except (OSError, ValueError) as exc:
+            archive_errors.append(f"{archive}: {exc}")
+            logging.warning("ADAPT archive %s: %s", archive, exc)
     else:
-        raise ValueError("ADAPT FITS download or loading failed: " + " | ".join(failures))
+        raise ValueError("Both NSO ADAPT endpoints failed: " + " | ".join(archive_errors))
 
     fig = plt.figure(figsize=(9.4, 4.6), layout="constrained")
     ax = fig.add_subplot(projection=smap)
