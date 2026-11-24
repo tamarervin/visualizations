@@ -1,0 +1,3 @@
+site_name: Heliophysics
+nav:
+  - Solar monitor: solar-monitor/index.md
