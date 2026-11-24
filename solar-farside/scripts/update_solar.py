@@ -15,10 +15,13 @@ from pathlib import Path
 import re
 import shutil
 from tempfile import TemporaryDirectory
-from urllib.parse import urlencode, urljoin
+from time import sleep
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode, urljoin, urlsplit
 from urllib.request import Request, urlopen
 
 import astropy.units as u
+from astropy.io import fits
 import matplotlib
 
 matplotlib.use("Agg")
@@ -91,37 +94,85 @@ def write_figure(fig, path):
         plt.close(fig)
 
 
+def adapt_directory_links(directory):
+    # A transient index request failure would otherwise leave no FITS candidates.
+    for attempt in range(2):
+        try:
+            return links(directory)
+        except (URLError, TimeoutError) as exc:
+            if attempt or (isinstance(exc, HTTPError) and exc.code not in {408, 429, 500, 502, 503, 504}):
+                raise
+            logging.warning("Retrying ADAPT directory %s after %s", directory, exc)
+            sleep(2)
+
+
+def read_adapt_member(url, temp):
+    content, _ = fetch(url)
+    path = temp / Path(urlsplit(url).path).name
+    path.write_bytes(content)
+    with fits.open(path, memmap=False) as hdus:
+        cube = hdus[0].data
+        if cube is None or cube.ndim not in (2, 3) or not cube.size:
+            raise ValueError("ADAPT primary HDU must contain a map or an ensemble cube")
+        member_count = cube.shape[0] if cube.ndim == 3 else 1
+        field = (cube[0] if cube.ndim == 3 else cube).copy()
+        header = hdus[0].header.copy()
+    if not np.isfinite(field).any():
+        raise ValueError("ADAPT ensemble member 1 contains no finite samples")
+
+    # FITS axis 3 is the ensemble. Keep the longitude and latitude metadata.
+    header["NAXIS"] = 2
+    header.pop("NAXIS3", None)
+    if "WCSAXES" in header:
+        header["WCSAXES"] = 2
+    return Map(field, header), member_count
+
+
 def render_adapt(out, now, temp):
-    candidates = []
+    candidates = set()
+    index_errors = []
     for year in sorted({now.year, (now - timedelta(days=7)).year}, reverse=True):
         directory = f"{GONG}{year}/"
         try:
-            for name in links(directory):
-                match = ADAPT_NAME.fullmatch(name)
-                if match:
-                    when = datetime.strptime(match[1], "%Y%m%d%H%M").replace(tzinfo=UTC)
-                    if when <= now:
-                        candidates.append((when, urljoin(directory, name)))
-        except OSError as exc:
-            logging.warning("ADAPT directory %s: %s", year, exc)
+            filenames = adapt_directory_links(directory)
+        except (OSError, ValueError) as exc:
+            index_errors.append(f"{directory}: {exc}")
+            logging.warning("ADAPT directory %s: %s", directory, exc)
+            continue
+        for href in filenames:
+            name = Path(urlsplit(href).path).name
+            match = ADAPT_NAME.fullmatch(name)
+            if match:
+                when = datetime.strptime(match[1], "%Y%m%d%H%M").replace(tzinfo=UTC)
+                if when <= now:
+                    candidates.add((when, urljoin(directory, name)))
+
+    if not candidates:
+        if index_errors:
+            raise ValueError("ADAPT archive discovery failed: " + " | ".join(index_errors))
+        raise ValueError("ADAPT archive index contained no eligible Carrington-fixed GONG filenames")
+
+    failures = []
     for when, url in sorted(candidates, reverse=True)[:3]:
         try:
-            smap = read_map(url, temp, hdus=0)
+            smap, member_count = read_adapt_member(url, temp)
             break
-        except (OSError, ValueError) as exc:
-            logging.warning("ADAPT file %s: %s", url, exc)
+        except (OSError, ValueError, EOFError) as exc:
+            failures.append(f"{url}: {exc}")
+            logging.warning("ADAPT FITS input %s: %s", url, exc)
     else:
-        raise ValueError("No readable Carrington-fixed GONG ADAPT map")
+        raise ValueError("ADAPT FITS download or loading failed: " + " | ".join(failures))
 
     fig = plt.figure(figsize=(9.4, 4.6), layout="constrained")
     ax = fig.add_subplot(projection=smap)
-    artist = smap.plot(axes=ax, cmap="RdBu_r", vmin=-30, vmax=30, title=False)
+    artist = smap.plot(axes=ax, cmap="RdBu_r", norm=Normalize(-30, 30), title=False)
     ax.set_title("")
     ax.set_xlabel("Carrington longitude")
     ax.set_ylabel("Carrington latitude")
     fig.colorbar(artist, ax=ax, label="Radial field (G)", shrink=0.84, extend="both")
     write_figure(fig, out)
-    return when, "Map time", url, "Carrington-fixed radial field, ADAPT ensemble member 1."
+    detail = f"Carrington-fixed radial field, ADAPT ensemble member 1 of {member_count}."
+    return when, "Map time", url, detail
 
 
 def render_farside(out, now, temp):
