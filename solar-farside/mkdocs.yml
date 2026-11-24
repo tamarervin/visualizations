@@ -6,6 +6,5 @@ nav:
   - Solar Monitor: solar-monitor/index.md
 extra_css:
   - stylesheets/heliophysics.css
-  
-  markdown_extensions:
+markdown_extensions:
   - md_in_html

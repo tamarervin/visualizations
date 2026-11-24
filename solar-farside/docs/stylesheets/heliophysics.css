@@ -1,5 +1,5 @@
 :root {
-  --site-lavender: #EBE3FA;
+  --site-lavender: #E5D9F4; /*EBE3FA*/ 
   --site-ink: #000;
   --site-font: Georgia, "Times New Roman", serif;
   --bs-font-sans-serif: var(--site-font);
@@ -7,8 +7,12 @@
   --bs-body-color: var(--site-ink);
   --bs-link-color: var(--site-ink);
   --bs-link-hover-color: var(--site-ink);
+    --site-cream: #FAF7F0;
+    --bs-body-bg: var(--site-cream);
 }
-
+body {
+  background-color: var(--site-cream);
+}
 body,
 button,
 input,
@@ -85,34 +89,53 @@ button:focus-visible {
 
 
 .research-wrap {
-  display: flow-root;
+  display: grid;
+  grid-template-columns: 40.000% minmax(0, 1fr);
+  align-items: center;
+  gap: 1.25rem;
 }
 
-.research-figure {
-  float: left;
-  width: 33.333%;
-  margin: 0 1.25rem 0.75rem 0;
-}
-
-.research-figure > p {
+.research-figure,
+.research-wrap > p {
   margin: 0;
 }
 
-.research-figure img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.research-figure figcaption {
-  margin-top: 0.5rem;
-  font-size: 0.9em;
-}
-
 @media (max-width: 650px) {
-  .research-figure {
-    float: none;
-    width: 100%;
-    margin: 0 0 1rem;
+  .research-wrap {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
   }
 }
+
+.profile-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+.profile-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid #000;
+  border-radius: 0;
+  background: #F4EEFC;
+  color: #000;
+  text-decoration: none;
+}
+
+.profile-links a:hover,
+.profile-links a:focus-visible {
+  background: #EBE3FA;
+  color: #000;
+  text-decoration: none;
+}
+.research-divider {
+  border: 0;
+  border-top: 2px solid #C4ADD8;
+  opacity: 1;
+  margin: 2rem 0;
+}
+
