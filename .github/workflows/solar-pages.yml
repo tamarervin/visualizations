@@ -1,0 +1,57 @@
+name: Refresh solar monitor and deploy MkDocs
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: solar-farside
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: solar-farside/requirements-solar.txt
+      - run: python -m pip install -r requirements-solar.txt
+      - uses: actions/configure-pages@v5
+      - uses: actions/cache/restore@v4
+        id: snapshots
+        with:
+          path: solar-farside/.solar-cache
+          key: solar-snapshots-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: solar-snapshots-v1-
+      - run: python scripts/update_solar.py
+      - uses: actions/cache/save@v4
+        if: hashFiles('solar-farside/.solar-cache/*.json') != ''
+        with:
+          path: solar-farside/.solar-cache
+          key: ${{ steps.snapshots.outputs.cache-primary-key }}
+      - run: python -m mkdocs build --strict
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: solar-farside/site
+      - uses: actions/deploy-pages@v4
+        id: deployment
