@@ -403,15 +403,15 @@ def write_page(now, results):
 
     grid = 'style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:1rem"'
     page = "\n\n".join([
-        "# Solar monitor",
+        "# Solar Monitor",
         f"Last refresh attempt {date_label(now)}. Observation times are shown for each product.",
-        "## Solar wind at Earth",
-        panels["omni"],
-        "## Earth-facing Sun",
-        f"<div {grid}>\n{panels['aia193']}\n{panels['aia211']}\n{panels['hmi']}\n</div>",
         "## Global and farside maps",
         panels["adapt"],
         panels["farside"],
+        "## Earth-facing Sun",
+        f"<div {grid}>\n{panels['aia193']}\n{panels['aia211']}\n{panels['hmi']}\n</div>",
+        "## Solar wind at Earth",
+        panels["omni"],
     ])
     (PAGE / "index.md").write_text(page + "\n", encoding="utf-8")
 

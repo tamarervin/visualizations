@@ -15,7 +15,6 @@ surrounding kinetic plasma physics. You can find a full list of publications thr
 
 <hr class="research-divider">
 
-
 ## How is the outer corona and solar wind heated?
 
 <div class="research-wrap" markdown="1">

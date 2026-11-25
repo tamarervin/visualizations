@@ -1,6 +1,6 @@
 # Heliophysics
 
-Heliophysics is the study of the interconnect Earth-Sun system, specifically studying the plasma physics processes that shape and change the plasma as it propagates from the Sun 
+Heliophysics is the study of the interconnected Earth-Sun system, specifically studying the plasma physics processes that shape and change the plasma as it propagates from the Sun 
 through the solar system and interacts with planetary environments. Check out [NASA's heliophysics page](https://science.nasa.gov/heliophysics/) for additional information
 on missions and the field.
 

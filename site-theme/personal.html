@@ -103,7 +103,7 @@
       row-gap: .25rem;
       padding-block: .7rem;
     }
-    .contact-links a { padding: .55rem .3rem; text-decoration: none; font-size: .95rem; }
+    .contact-links a { padding: .55rem .3rem; text-decoration: none; font-size: 1rem; }
     .contact-links a:hover { text-decoration: underline; text-underline-offset: .35em; }
     @media (max-width: 48rem) {
       .intro { grid-template-columns: 1fr; }
@@ -150,8 +150,8 @@
      <!--  <a href="mailto:tamarervin@berkeley.edu">Email</a> -->
    <!--  </nav> -->
   <!-- </div>  -->
-  
-  <div class="profile-links">
+  <div class="contact-bar">
+  <nav class="contact-links">
     <a href="https://scholar.google.com/citations?user=a9dSo5IAAAAJ&amp;hl=en">
       Google Scholar <span aria-hidden="true">↗</span>
     </a>
@@ -167,6 +167,7 @@
     <a href="mailto:tamarervin@berkeley.edu">
       Email Me! <span aria-hidden="true">↗</span>
           </a>
+         </nav>
   </div>
 
   <hr class="research-divider">
@@ -176,9 +177,15 @@
   {{ super() }}
   <script>
     // Use paths relative to this page so images also work on a GitHub Pages project URL.
-    const portraitSource = '';
-    // Add entries with a src path and descriptive alt text when photos are available.
-    const slides = [];
+   const portraitSource = 'assets/images/Ervin_Headshot2.JPG';
+
+    const slides = [
+      { src: 'assets/images/solar_talk.JPG', alt: 'Describe the first photo here' },
+      { src: 'assets/images/esa.jpg', alt: 'Describe the second photo here' },
+       { src: 'assets/images/aurora.jpg', alt: 'Describe the second photo here' },
+      { src: 'assets/images/grad.jpg', alt: 'Describe the second photo here' },
+       { src: 'assets/images/PSP_SWG.jpeg', alt: 'Describe the second photo here' },
+    ];
 
     if (portraitSource) {
       const portraitImage = document.getElementById('portrait-image');

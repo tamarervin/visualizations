@@ -14,3 +14,5 @@ I am the electric and magnetic field (FIELDS) instrument suite PI, under the sup
 on the upcoming [OCHRE](https://physics.uiowa.edu/news/2024/09/nasa-funds-student-led-rocket-mission) ionospheric 
 Sounding Rocket mission scheduled for launch early 2027. I previously worked on the 
 [FOXSI-4](https://foxsi.umn.edu/launches/foxsi-4) Sounding Rocket Campaign.
+
+

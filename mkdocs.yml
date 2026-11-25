@@ -6,12 +6,13 @@ site_dir: public
 theme:
   name: mkdocs
   custom_dir: site-theme
-
+  
 nav:
   - Home: index.md
   - Research: heliophysics/research/index.md
-  - Heliophysics: heliophysics/index.md
-  - Solar Monitor: heliophysics/solar-monitor/index.md
+  - Heliophysics:
+      - Overview: heliophysics/index.md
+      - Solar Monitor: heliophysics/solar-monitor/index.md
   - CV: assets/tamar-ervin-cv.pdf
 
 extra_css:
