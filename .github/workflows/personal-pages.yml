@@ -1,0 +1,80 @@
+name: Deploy personal site and refresh Solar Monitor
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: solar-farside
+    outputs:
+      artifact_name: ${{ steps.artifact.outputs.name }}
+
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: solar-farside/requirements-solar.txt
+      - run: python -m pip install -r requirements-solar.txt
+      - uses: actions/configure-pages@v5
+        id: pages
+      - uses: actions/cache/restore@v4
+        id: snapshots
+        with:
+          path: solar-farside/.solar-cache
+          key: solar-snapshots-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: solar-snapshots-v1-
+      - run: python scripts/update_solar.py
+      - uses: actions/cache/save@v4
+        if: hashFiles('solar-farside/.solar-cache/*.json') != ''
+        with:
+          path: solar-farside/.solar-cache
+          key: ${{ steps.snapshots.outputs.cache-primary-key }}
+      - name: Assemble homepage and Heliophysics site
+        env:
+          PERSONAL_HOME_URL: ${{ steps.pages.outputs.base_url }}/
+          HELIOPHYSICS_SITE_URL: ${{ steps.pages.outputs.base_url }}/heliophysics/
+        run: |
+          mkdir -p ../public
+          cp ../index.html ../public/
+          cp -R ../assets ../public/
+          python -m mkdocs build --strict --site-dir ../public/heliophysics
+      - name: Name the Pages artifact
+        id: artifact
+        run: echo "name=github-pages-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          name: ${{ steps.artifact.outputs.name }}
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v5
+        id: deployment
+        with:
+          artifact_name: ${{ needs.build.outputs.artifact_name }}
