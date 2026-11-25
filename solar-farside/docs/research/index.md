@@ -65,7 +65,11 @@ that stochastic heating matches the expected energy transfer.
 
 <div class="research-text" markdown="1">
 
-Using a combination of models and mutli-spacecraft observations, we have made significant progress towards understanding the source
+The fast solar wind has long been known to emerge from coronal hole (cool, low density) regions along open field lines in the solar corona. The wind then continually
+accelerates through the inner heliosphere where it is measured in-situ by spacecraft. The slow solar wind however often has different plasma parameters than the fast wind, 
+and full understanding of its source(s) and release mechanism(s) is still considered an open problem.
+
+Using a combination of models and multi-spacecraft observations, we have made significant progress towards understanding the source
 region of the slow solar wind. **From Parker Solar Probe and Solar Orbiter observations, we show that slow wind typically emerges from the boundaries of coronal hole structures.**
 
 
