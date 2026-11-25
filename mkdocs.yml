@@ -13,6 +13,7 @@ nav:
   - Heliophysics:
       - Overview: heliophysics/index.md
       - Solar Monitor: heliophysics/solar-monitor/index.md
+      - Parker Solar Probe:  heliophysics/parker/index.md
   - CV: assets/tamar-ervin-cv.pdf
 
 extra_css:
