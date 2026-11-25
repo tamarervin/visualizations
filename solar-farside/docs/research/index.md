@@ -81,7 +81,7 @@ region of the slow solar wind. **From Parker Solar Probe and Solar Orbiter obser
 
 <figure class="research-figure" markdown="1">
 
-![Overview of the Earth's polar cusps.](Miles_2025_cusps.jpg)
+![Overview of the Earth's polar cusps.](Miles_2025_Cusps.jpg)
 
 <figcaption markdown="span">
 *Overview of the Earth's polar cusps and the TRACERS mission trajectory. Figure from [Miles et al. (2025)](https://link.springer.com/article/10.1007/s11214-025-01184-4?fromPaywallRec=false).*
