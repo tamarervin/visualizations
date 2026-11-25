@@ -1,0 +1,201 @@
+{% extends "main.html" %}
+{% block extrahead %}
+  <style>
+    [hidden] { display: none !important; }
+    .intro { --line: #d4c6ec; --outline: #806c9b; }
+    .portrait { --outline: #806c9b; margin-bottom: 1rem; }
+    .portrait {
+      width: 5rem;
+      height: 5rem;
+      border: 1px solid var(--outline);
+      border-radius: 50%;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      font-size: 1.4rem;
+    }
+    .portrait img, .slide img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+      align-items: center;
+      gap: clamp(2rem, 6vw, 5.5rem);
+      padding-block: clamp(3rem, 8vw, 6rem);
+    }
+    .bio h1 {
+      margin: 0 0 1.4rem;
+      font: normal clamp(3.15rem, 6.4vw, 6rem)/.98 var(--site-font);
+      letter-spacing: -.045em;
+    }
+    .bio p { margin: 0 0 1rem; font-size: 1.07rem; line-height: 1.65; }
+    .bio p:last-child { margin-bottom: 0; }
+    .bio a { text-underline-offset: .2em; }
+    .gallery { margin: 0; position: relative; }
+    .slide {
+      aspect-ratio: 5 / 4;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      position: relative;
+      border-radius: .85rem;
+      background: var(--site-lavender);
+    }
+    .slide img { position: absolute; inset: 0; }
+    .placeholder {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+    }
+    .placeholder::before, .placeholder::after {
+      content: "";
+      position: absolute;
+      width: 118%;
+      height: 61%;
+      left: -10%;
+      top: 19%;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      transform: rotate(-29deg);
+      z-index: -1;
+    }
+    .placeholder::after { transform: rotate(31deg); }
+    .placeholder span {
+      background: #fff;
+      border: 1px solid var(--outline);
+      border-radius: 2rem;
+      padding: .5rem .9rem;
+      font-size: .9rem;
+    }
+    .gallery-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: .7rem;
+      margin-top: .9rem;
+    }
+    .gallery-controls button {
+      padding: .45rem .8rem;
+      border: 1px solid var(--outline);
+      border-radius: .4rem;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      font: inherit;
+    }
+    .gallery-controls button:hover { background: var(--site-lavender); }
+    .slide-count { font-variant-numeric: tabular-nums; }
+    .contact-bar {
+      --line: #d4c6ec;
+      background: var(--site-lavender);
+      border-top: 1px solid var(--line);
+    }
+    .contact-links {
+      min-height: 5.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      column-gap: clamp(1rem, 5vw, 3.5rem);
+      row-gap: .25rem;
+      padding-block: .7rem;
+    }
+    .contact-links a { padding: .55rem .3rem; text-decoration: none; font-size: .95rem; }
+    .contact-links a:hover { text-decoration: underline; text-underline-offset: .35em; }
+    @media (max-width: 48rem) {
+      .intro { grid-template-columns: 1fr; }
+      .gallery { max-width: 36rem; width: 100%; }
+      .slide { aspect-ratio: 4 / 3; }
+    }
+    @media (max-width: 30rem) {
+      .portrait { width: 3.7rem; height: 3.7rem; font-size: 1.1rem; }
+      .intro { padding-block: 2.6rem; }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <main id="main" class="intro" role="main">
+    <section class="bio" aria-labelledby="tamar-ervin">
+      <div class="portrait">
+        <span id="portrait-placeholder" aria-hidden="true">TE</span>
+        <img id="portrait-image" alt="Tamar Ervin" hidden>
+      </div>
+      {{ page.content }}
+    </section>
+      <section class="gallery" aria-label="Photo slideshow">
+        <div class="slide">
+          <div class="placeholder" id="slide-placeholder">
+            <span>Photos coming soon</span>
+          </div>
+          <img id="slide-image" alt="" hidden>
+        </div>
+        <div class="gallery-controls" id="gallery-controls" hidden>
+          <button id="previous-slide" type="button">Previous</button>
+          <span class="slide-count" id="slide-count" role="status"></span>
+          <button id="next-slide" type="button">Next</button>
+        </div>
+      </section>
+  </main>
+{% endblock %}
+
+{% block footer %}
+  <div class="contact-bar">
+    <nav class="contact-links" aria-label="Contact links">
+      <a href="https://www.linkedin.com/in/tamar-ervin">LinkedIn</a>
+      <a href="https://github.com/tamarervin">GitHub</a>
+      <a href="mailto:tamarervin@berkeley.edu">Email</a>
+    </nav>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    // Use paths relative to this page so images also work on a GitHub Pages project URL.
+    const portraitSource = '';
+    // Add entries with a src path and descriptive alt text when photos are available.
+    const slides = [];
+
+    if (portraitSource) {
+      const portraitImage = document.getElementById('portrait-image');
+      portraitImage.addEventListener('load', () => {
+        portraitImage.hidden = false;
+        document.getElementById('portrait-placeholder').hidden = true;
+      }, { once: true });
+      portraitImage.src = portraitSource;
+    }
+
+    if (slides.length) {
+      const image = document.getElementById('slide-image');
+      const placeholder = document.getElementById('slide-placeholder');
+      const count = document.getElementById('slide-count');
+      let currentSlide = 0;
+
+      function showSlide(index) {
+        currentSlide = (index + slides.length) % slides.length;
+        const slide = slides[currentSlide];
+        image.alt = slide.alt;
+        image.src = slide.src;
+        count.textContent = (currentSlide + 1) + ' of ' + slides.length;
+      }
+
+      image.addEventListener('load', () => {
+        image.hidden = false;
+        placeholder.hidden = true;
+      });
+      image.addEventListener('error', () => {
+        image.hidden = true;
+        placeholder.querySelector('span').textContent = 'Photo unavailable';
+        placeholder.hidden = false;
+      });
+      document.getElementById('previous-slide').addEventListener('click', () => showSlide(currentSlide - 1));
+      document.getElementById('next-slide').addEventListener('click', () => showSlide(currentSlide + 1));
+      document.getElementById('gallery-controls').hidden = slides.length < 2;
+      showSlide(0);
+    }
+  </script>
+{% endblock %}

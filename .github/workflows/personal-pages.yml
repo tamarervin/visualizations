@@ -49,15 +49,17 @@ jobs:
         with:
           path: solar-farside/.solar-cache
           key: ${{ steps.snapshots.outputs.cache-primary-key }}
-      - name: Assemble homepage and Heliophysics site
+      - name: Build the combined MkDocs site
+        working-directory: .
         env:
-          PERSONAL_HOME_URL: ${{ steps.pages.outputs.base_url }}/
-          HELIOPHYSICS_SITE_URL: ${{ steps.pages.outputs.base_url }}/heliophysics/
+          PERSONAL_SITE_URL: ${{ steps.pages.outputs.base_url }}/
         run: |
-          mkdir -p ../public
-          cp ../index.html ../public/
-          cp -R ../assets ../public/
-          python -m mkdocs build --strict --site-dir ../public/heliophysics
+          export PERSONAL_SITE_DOCS_DIR="$(mktemp -d)"
+          trap 'rm -rf "$PERSONAL_SITE_DOCS_DIR"' EXIT
+          cp -a homepage/. "$PERSONAL_SITE_DOCS_DIR/"
+          cp -a solar-farside/docs "$PERSONAL_SITE_DOCS_DIR/heliophysics"
+          cp -a assets "$PERSONAL_SITE_DOCS_DIR/assets"
+          python -m mkdocs build --strict
       - name: Name the Pages artifact
         id: artifact
         run: echo "name=github-pages-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"

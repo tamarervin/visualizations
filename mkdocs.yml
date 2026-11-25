@@ -1,0 +1,21 @@
+site_name: Tamar Ervin
+site_url: !ENV [PERSONAL_SITE_URL, 'https://tamarervin.github.io/visualizations/']
+docs_dir: !ENV [PERSONAL_SITE_DOCS_DIR, site-docs]
+site_dir: public
+
+theme:
+  name: mkdocs
+  custom_dir: site-theme
+
+nav:
+  - Home: index.md
+  - Research: heliophysics/research/index.md
+  - Heliophysics: heliophysics/index.md
+  - Solar Monitor: heliophysics/solar-monitor/index.md
+  - CV: assets/tamar-ervin-cv.pdf
+
+extra_css:
+  - heliophysics/stylesheets/heliophysics.css
+
+markdown_extensions:
+  - md_in_html
