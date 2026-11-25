@@ -2,15 +2,3 @@
 .DS_Store
 __pycache__
 .spyproject/
-*.fits
-*.png
-*.eps
-*.csv
-*.pdf
-*.zip
-*.cdf
-*.tmp
-*.wget
-*.cdf
-*.xml
-*.sts
