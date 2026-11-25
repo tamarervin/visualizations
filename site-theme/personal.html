@@ -3,10 +3,10 @@
   <style>
     [hidden] { display: none !important; }
     .intro { --line: #d4c6ec; --outline: #806c9b; }
-    .portrait { --outline: #806c9b; margin-bottom: 1rem; }
     .portrait {
       width: 5rem;
       height: 5rem;
+      flex: none;
       border: 1px solid var(--outline);
       border-radius: 50%;
       overflow: hidden;
@@ -23,9 +23,16 @@
       gap: clamp(2rem, 6vw, 5.5rem);
       padding-block: clamp(3rem, 8vw, 6rem);
     }
-    .bio h1 {
+    .bio { container-type: inline-size; }
+    .bio-heading {
+      display: flex;
+      align-items: center;
+      gap: clamp(.75rem, 3cqi, 1.5rem);
       margin: 0 0 1.4rem;
-      font: normal clamp(3.15rem, 6.4vw, 6rem)/.98 var(--site-font);
+    }
+    .bio-heading h1 {
+      margin: 0;
+      font: normal clamp(1.65rem, 13cqi, 6rem)/.98 var(--site-font);
       letter-spacing: -.045em;
     }
     .bio p { margin: 0 0 1rem; font-size: 1.07rem; line-height: 1.65; }
@@ -105,6 +112,11 @@
     }
     .contact-links a { padding: .55rem .3rem; text-decoration: none; font-size: 1rem; }
     .contact-links a:hover { text-decoration: underline; text-underline-offset: .35em; }
+    @media (min-width: 992px) {
+      .intro { padding-block: clamp(1.25rem, 3vh, 2rem); }
+      body > footer { margin-top: .5rem; }
+      .contact-links { min-height: 0; padding-block: .5rem; }
+    }
     @media (max-width: 48rem) {
       .intro { grid-template-columns: 1fr; }
       .gallery { max-width: 36rem; width: 100%; }
@@ -120,9 +132,12 @@
 {% block content %}
   <main id="main" class="intro" role="main">
     <section class="bio" aria-labelledby="tamar-ervin">
-      <div class="portrait">
-        <span id="portrait-placeholder" aria-hidden="true">TE</span>
-        <img id="portrait-image" alt="Tamar Ervin" hidden>
+      <div class="bio-heading">
+        <div class="portrait">
+          <span id="portrait-placeholder" aria-hidden="true">TE</span>
+          <img id="portrait-image" alt="Tamar Ervin" hidden>
+        </div>
+        <h1 id="tamar-ervin">{{ page.meta.heading | e }}</h1>
       </div>
       {{ page.content }}
     </section>
@@ -169,8 +184,6 @@
           </a>
          </nav>
   </div>
-
-  <hr class="research-divider">
 {% endblock %}
 
 {% block scripts %}

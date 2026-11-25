@@ -36,6 +36,18 @@ textarea {
   filter: brightness(0);
 }
 
+@media (min-width: 992px) {
+  .navbar-expand-lg #navbar-collapse > .navbar-nav:first-child {
+    flex-grow: 1;
+    justify-content: flex-end;
+  }
+
+  .navbar-expand-lg #navbar-collapse .navbar-nav .dropdown-menu {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+  }
+}
+
 .navbar.bg-primary .nav-link:hover,
 .navbar.bg-primary .nav-link.active {
   text-decoration: underline;

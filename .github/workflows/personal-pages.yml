@@ -49,6 +49,18 @@ jobs:
         with:
           path: heliophysics/.solar-cache
           key: ${{ steps.snapshots.outputs.cache-primary-key }}
+      - uses: actions/cache/restore@v4
+        id: psp-ephemeris
+        with:
+          path: heliophysics/.psp-cache
+          key: psp-ephemeris-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: psp-ephemeris-v1-
+      - run: python scripts/update_psp.py
+      - uses: actions/cache/save@v4
+        if: hashFiles('heliophysics/.psp-cache/psp-orbit.json') != ''
+        with:
+          path: heliophysics/.psp-cache
+          key: ${{ steps.psp-ephemeris.outputs.cache-primary-key }}
       - name: Build the combined MkDocs site
         working-directory: .
         env:

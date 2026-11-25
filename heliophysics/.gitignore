@@ -1,4 +1,6 @@
 /site/
 /.solar-cache/
+/.psp-cache/
 __pycache__/
 /docs/solar-monitor/*.png
+/docs/parker/psp-orbit.json
