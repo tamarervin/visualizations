@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 15
     defaults:
       run:
-        working-directory: solar-farside
+        working-directory: heliophysics
     outputs:
       artifact_name: ${{ steps.artifact.outputs.name }}
 
@@ -33,21 +33,21 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: solar-farside/requirements-solar.txt
+          cache-dependency-path: heliophysics/requirements-solar.txt
       - run: python -m pip install -r requirements-solar.txt
       - uses: actions/configure-pages@v5
         id: pages
       - uses: actions/cache/restore@v4
         id: snapshots
         with:
-          path: solar-farside/.solar-cache
+          path: heliophysics/.solar-cache
           key: solar-snapshots-v1-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: solar-snapshots-v1-
       - run: python scripts/update_solar.py
       - uses: actions/cache/save@v4
-        if: hashFiles('solar-farside/.solar-cache/*.json') != ''
+        if: hashFiles('heliophysics/.solar-cache/*.json') != ''
         with:
-          path: solar-farside/.solar-cache
+          path: heliophysics/.solar-cache
           key: ${{ steps.snapshots.outputs.cache-primary-key }}
       - name: Build the combined MkDocs site
         working-directory: .
@@ -57,7 +57,7 @@ jobs:
           export PERSONAL_SITE_DOCS_DIR="$(mktemp -d)"
           trap 'rm -rf "$PERSONAL_SITE_DOCS_DIR"' EXIT
           cp -a homepage/. "$PERSONAL_SITE_DOCS_DIR/"
-          cp -a solar-farside/docs "$PERSONAL_SITE_DOCS_DIR/heliophysics"
+          cp -a heliophysics/docs "$PERSONAL_SITE_DOCS_DIR/heliophysics"
           cp -a assets "$PERSONAL_SITE_DOCS_DIR/assets"
           python -m mkdocs build --strict
       - name: Name the Pages artifact
